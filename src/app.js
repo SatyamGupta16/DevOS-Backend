@@ -17,6 +17,15 @@ const errorHandler = require("./middleware/errorHandler");
 
 const User = require("./modules/user/models/userModel");
 
+const validateRequest = require("./middleware/validateRequest");
+const {
+    registerValidation,
+} = require("./modules/user/validators/userValidator");
+
+const userService = require("./modules/user/services/userService");
+
+const userController = require("./modules/user/controllers/userController");
+
 const app = express();
 
 /* ==============================
@@ -119,6 +128,91 @@ app.get("/test-user-model", async (req, res) => {
     }
 });
 // http://localhost:27017/test-user-model
+
+
+app.post(
+    "/test-validation",
+    registerValidation,
+    validateRequest,
+    (req, res) => {
+        res.status(200).json({
+            success: true,
+            message: "Validation Passed ✅",
+        });
+    }
+);
+// http://localhost:27017/test-validation
+
+app.get("/test-user-service", async (req, res) => {
+    try {
+        const users = await userService.getAllUsers();
+
+        res.status(200).json({
+            success: true,
+            message: "userService.js is working!",
+            totalUsers: users.length,
+            data: users,
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+});
+//GET http://localhost:27017/test-user-service
+
+app.post("/test-create-user", async (req, res) => {
+    try {
+        const user = await userService.createUser(req.body);
+
+        return ApiResponse(
+            res,
+            STATUS_CODES.CREATED,
+            "User created successfully!",
+            user
+        );
+    } catch (error) {
+        return next(error);
+    }
+});
+// POST http://localhost:27017/test-create-user
+
+/* ==============================
+   User Controller Test Routes
+============================== */
+
+app.post(
+    "/test-controller/create-user",
+    registerValidation,
+    validateRequest,
+    userController.createUser
+);
+//POST http://localhost:27017/test-controller/create-user
+
+app.get(
+    "/test-controller/users",
+    userController.getAllUsers
+);
+//GET http://localhost:27017/test-controller/users
+
+app.get(
+    "/test-controller/user/:id",
+    userController.getUserById
+);
+//GET http://localhost:27017/test-controller/user/<USER_ID>
+
+app.put(
+    "/test-controller/user/:id",
+    userController.updateUser
+);
+//PUT http://localhost:27017/test-controller/user/<USER_ID>
+
+app.delete(
+    "/test-controller/user/:id",
+    userController.deleteUser
+);
+//DELETE http://localhost:27017/test-controller/user/<USER_ID>
 
 /* ==============================
    API Routes
