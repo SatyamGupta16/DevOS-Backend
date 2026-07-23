@@ -14,17 +14,37 @@ const routes = require("./routes");
 
 const notFound = require("./middleware/notFound");
 const errorHandler = require("./middleware/errorHandler");
+const validateRequest = require("./middleware/validateRequest");
+
+/* ==============================
+   User Module
+============================== */
 
 const User = require("./modules/user/models/userModel");
 
-const validateRequest = require("./middleware/validateRequest");
 const {
     registerValidation,
 } = require("./modules/user/validators/userValidator");
 
 const userService = require("./modules/user/services/userService");
-
 const userController = require("./modules/user/controllers/userController");
+
+/* ==============================
+   Auth Module
+============================== */
+
+const authService = require("./modules/auth/services/authService");
+const authController = require("./modules/auth/controllers/authController");
+
+const {
+    loginValidation,
+} = require("./modules/auth/validators/authValidator");
+
+const generateAccessToken = require("./modules/auth/utils/generateAccessToken");
+const generateRefreshToken = require("./modules/auth/utils/generateRefreshToken");
+
+const verifyAccessToken = require("./modules/auth/utils/verifyAccessToken");
+const verifyRefreshToken = require("./modules/auth/utils/verifyRefreshToken");
 
 const app = express();
 
@@ -162,7 +182,7 @@ app.get("/test-user-service", async (req, res) => {
 });
 //GET http://localhost:27017/test-user-service
 
-app.post("/test-create-user", async (req, res) => {
+app.post("/test-create-user", async (req, res, next) => {
     try {
         const user = await userService.createUser(req.body);
 
@@ -177,6 +197,162 @@ app.post("/test-create-user", async (req, res) => {
     }
 });
 // POST http://localhost:27017/test-create-user
+
+/* ==============================
+   Auth Test Routes
+============================== */
+
+app.post("/test-auth-register", async (req, res, next) => {
+    try {
+        const user = await authService.registerUser(req.body);
+
+        return ApiResponse(
+            res,
+            STATUS_CODES.CREATED,
+            "User Registered Successfully",
+            user
+        );
+    } catch (error) {
+        next(error);
+    }
+});
+
+app.post("/test-auth-login", async (req, res, next) => {
+    try {
+        const user = await authService.loginUser(
+            req.body.email,
+            req.body.password
+        );
+
+        if (!user) {
+            return res.status(401).json({
+                success: false,
+                message: "Invalid email or password",
+            });
+        }
+
+        return ApiResponse(
+            res,
+            STATUS_CODES.OK,
+            "Login Successful",
+            user
+        );
+    } catch (error) {
+        next(error);
+    }
+});
+
+// const generateAccessToken = require("./modules/auth/utils/generateAccessToken");
+
+app.get("/test-access-token", async (req, res, next) => {
+    try {
+        const user = await User.findOne();
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "No user found",
+            });
+        }
+
+        const token = generateAccessToken(user);
+
+        return res.status(200).json({
+            success: true,
+            message: "Access Token Generated Successfully",
+            token,
+        });
+    } catch (error) {
+        next(error);
+    }
+});
+
+app.get("/test-refresh-token", async (req, res, next) => {
+    try {
+        const user = await User.findOne();
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "No user found",
+            });
+        }
+
+        const token = generateRefreshToken(user);
+
+        return res.status(200).json({
+            success: true,
+            message: "Refresh Token Generated Successfully",
+            token,
+        });
+    } catch (error) {
+        next(error);
+    }
+});
+
+app.get("/test-verify-access-token", async (req, res, next) => {
+    try {
+        const token = req.headers.authorization?.split(" ")[1];
+
+        if (!token) {
+            return res.status(400).json({
+                success: false,
+                message: "Access Token Missing",
+            });
+        }
+
+        const decoded = verifyAccessToken(token);
+
+        return res.status(200).json({
+            success: true,
+            message: "Access Token Verified Successfully",
+            decoded,
+        });
+    } catch (error) {
+        next(error);
+    }
+});
+
+app.get("/test-verify-refresh-token", async (req, res, next) => {
+    try {
+        const token = req.headers.authorization?.split(" ")[1];
+
+        if (!token) {
+            return res.status(400).json({
+                success: false,
+                message: "Refresh Token Missing",
+            });
+        }
+
+        const decoded = verifyRefreshToken(token);
+
+        return res.status(200).json({
+            success: true,
+            message: "Refresh Token Verified Successfully",
+            decoded,
+        });
+    } catch (error) {
+        next(error);
+    }
+});
+
+/* ==============================
+   Auth Controller Test Routes
+============================== */
+
+app.post(
+    "/test-auth-controller/register",
+    registerValidation,
+    validateRequest,
+    authController.register
+);
+
+app.post(
+    "/test-auth-controller/login",
+    loginValidation,
+    validateRequest,
+    authController.login
+);
 
 /* ==============================
    User Controller Test Routes
@@ -213,6 +389,12 @@ app.delete(
     userController.deleteUser
 );
 //DELETE http://localhost:27017/test-controller/user/<USER_ID>
+
+app.get("/test-users", async (req, res) => {
+    const users = await User.find();
+
+    res.json(users);
+});
 
 /* ==============================
    API Routes
