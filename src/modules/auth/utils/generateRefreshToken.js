@@ -5,10 +5,9 @@ const generateRefreshToken = (user) => {
         {
             id: user._id,
         },
-        process.env.JWT_SECRET,
+        process.env.JWT_REFRESH_SECRET,
         {
-            expiresIn:
-                process.env.JWT_REFRESH_EXPIRES_IN || "30d",
+            expiresIn: process.env.JWT_REFRESH_EXPIRES,
         }
     );
 };

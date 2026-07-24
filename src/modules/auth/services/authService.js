@@ -7,17 +7,17 @@ const User = require("../../user/models/userModel");
 ============================== */
 
 const registerUser = async (userData) => {
-    const hashedPassword = await bcrypt.hash(
-        userData.password,
-        10
-    );
+    const hashedPassword = await bcrypt.hash(userData.password, 10);
 
     const user = await User.create({
         ...userData,
         password: hashedPassword,
     });
 
-    return user;
+    const userObject = user.toObject();
+    delete userObject.password;
+
+    return userObject;
 };
 
 /* ==============================
@@ -40,7 +40,10 @@ const loginUser = async (email, password) => {
         return null;
     }
 
-    return user;
+    const userObject = user.toObject();
+    delete userObject.password;
+
+    return userObject;
 };
 
 /* ==============================
@@ -48,13 +51,7 @@ const loginUser = async (email, password) => {
 ============================== */
 
 const getUserByEmail = async (email) => {
-    console.log("Searching Email :", email);
-
-    const user = await User.findOne({ email });
-
-    console.log("Found Email :", user);
-
-    return user;
+    return await User.findOne({ email });
 };
 
 /* ==============================
@@ -62,13 +59,7 @@ const getUserByEmail = async (email) => {
 ============================== */
 
 const getUserByUsername = async (username) => {
-    console.log("Searching Username :", username);
-
-    const user = await User.findOne({ username });
-
-    console.log("Found Username :", user);
-
-    return user;
+    return await User.findOne({ username });
 };
 
 module.exports = {

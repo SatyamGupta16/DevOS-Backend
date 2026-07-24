@@ -20,7 +20,7 @@ router.get("/", (req, res) => {
 
 router.use("/users", require("../modules/user"));
 
-// router.use("/auth", require("../modules/auth"));
+router.use("/auth", require("../modules/auth"));
 // router.use("/dashboard", require("../modules/dashboard"));
 // router.use("/github", require("../modules/github"));
 // router.use("/leetcode", require("../modules/leetcode"));

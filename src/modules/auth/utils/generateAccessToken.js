@@ -5,10 +5,11 @@ const generateAccessToken = (user) => {
         {
             id: user._id,
             email: user.email,
+            role: user.role,
         },
-        process.env.JWT_SECRET,
+        process.env.JWT_ACCESS_SECRET,
         {
-            expiresIn: process.env.JWT_EXPIRES_IN || "7d",
+            expiresIn: process.env.JWT_ACCESS_EXPIRES,
         }
     );
 };

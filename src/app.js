@@ -46,6 +46,8 @@ const generateRefreshToken = require("./modules/auth/utils/generateRefreshToken"
 const verifyAccessToken = require("./modules/auth/utils/verifyAccessToken");
 const verifyRefreshToken = require("./modules/auth/utils/verifyRefreshToken");
 
+const authMiddleware = require("./middleware/authMiddleware");
+
 const app = express();
 
 /* ==============================
@@ -259,7 +261,6 @@ app.get("/test-access-token", async (req, res, next) => {
 
         return res.status(200).json({
             success: true,
-            message: "Access Token Generated Successfully",
             token,
         });
     } catch (error) {
@@ -335,6 +336,18 @@ app.get("/test-verify-refresh-token", async (req, res, next) => {
         next(error);
     }
 });
+
+app.get(
+    "/test-auth-middleware",
+    authMiddleware,
+    (req, res) => {
+        res.status(200).json({
+            success: true,
+            message: "Auth Middleware Working ✅",
+            user: req.user,
+        });
+    }
+);
 
 /* ==============================
    Auth Controller Test Routes
