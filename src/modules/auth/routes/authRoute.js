@@ -11,9 +11,13 @@ const {
 
 const validateRequest = require("../../../middleware/validateRequest");
 
+const protect = require("../../../middleware/authMiddleware");
+
+
 /* ==============================
    Authentication Routes
 ============================== */
+
 
 // Register
 router.post(
@@ -23,6 +27,7 @@ router.post(
     authController.register
 );
 
+
 // Login
 router.post(
     "/login",
@@ -31,22 +36,28 @@ router.post(
     authController.login
 );
 
+
 // Refresh Access Token
 router.post(
     "/refresh-token",
     authController.refreshAccessToken
 );
 
-// Logout
+
+// Logout (Protected)
 router.post(
     "/logout",
+    protect,
     authController.logout
 );
 
-// Get Current User
+
+// Get Current User (Protected)
 router.get(
     "/me",
+    protect,
     authController.getCurrentUser
 );
+
 
 module.exports = router;
