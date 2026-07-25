@@ -21,7 +21,7 @@ const registerUser = async (userData) => {
 };
 
 /* ==============================
-   Login User
+   Login User      http://localhost:27017/api/v1/auth/login
 ============================== */
 
 const loginUser = async (email, password) => {
@@ -62,9 +62,54 @@ const getUserByUsername = async (username) => {
     return await User.findOne({ username });
 };
 
+/* ==============================
+   Save Refresh Token
+============================== */
+
+const saveRefreshToken = async (userId, refreshToken) => {
+    return await User.findByIdAndUpdate(
+        userId,
+        {
+            refreshToken,
+        },
+        {
+            new: true,
+        }
+    );
+};
+
+
+/* ==============================
+   Find User By ID
+============================== */
+
+const getUserById = async (id) => {
+    return await User.findById(id);
+};
+
+
+/* ==============================
+   Remove Refresh Token
+============================== */
+
+const removeRefreshToken = async (userId) => {
+    return await User.findByIdAndUpdate(
+        userId,
+        {
+            refreshToken: "",
+        },
+        {
+            new: true,
+        }
+    );
+};
+
 module.exports = {
     registerUser,
     loginUser,
     getUserByEmail,
     getUserByUsername,
+    saveRefreshToken,
+    getUserById,
+    removeRefreshToken,
 };

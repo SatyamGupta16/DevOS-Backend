@@ -30,7 +30,8 @@ const register = asyncHandler(async (req, res) => {
         );
     }
 
-    const existingUsername = await authService.getUserByUsername(username);
+    const existingUsername =
+        await authService.getUserByUsername(username);
 
     if (existingUsername) {
         throw new ApiError(
@@ -48,6 +49,12 @@ const register = asyncHandler(async (req, res) => {
 
     const accessToken = generateAccessToken(user);
     const refreshToken = generateRefreshToken(user);
+
+    // Save Refresh Token
+    await authService.saveRefreshToken(
+        user._id,
+        refreshToken
+    );
 
     return ApiResponse(
         res,
@@ -73,7 +80,10 @@ const login = asyncHandler(async (req, res) => {
 
     const { email, password } = req.body;
 
-    const user = await authService.loginUser(email, password);
+    const user = await authService.loginUser(
+        email,
+        password
+    );
 
     if (!user) {
         throw new ApiError(
@@ -84,6 +94,12 @@ const login = asyncHandler(async (req, res) => {
 
     const accessToken = generateAccessToken(user);
     const refreshToken = generateRefreshToken(user);
+
+    // Save Refresh Token
+    await authService.saveRefreshToken(
+        user._id,
+        refreshToken
+    );
 
     return ApiResponse(
         res,
@@ -110,7 +126,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 });
 
 /* ==============================
-   Logout
+   Logout                http://localhost:27017/api/v1/auth/logout
 ============================== */
 
 const logout = asyncHandler(async (req, res) => {
