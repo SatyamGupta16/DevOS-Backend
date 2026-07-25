@@ -11,6 +11,28 @@ const {
 
 const validateRequest = require("../../../middleware/validateRequest");
 
+const protect = require("../../../middleware/authMiddleware");
+
+/* ==============================
+   Profile Routes (Protected)
+============================== */
+
+// Get Current User Profile
+router.get(
+    "/profile",
+    protect,
+    userController.getProfile
+);
+
+// Update Current User Profile
+router.put(
+    "/profile",
+    protect,
+    updateProfileValidation,
+    validateRequest,
+    userController.updateProfile
+);
+
 /* ==============================
    Create User
 ============================== */

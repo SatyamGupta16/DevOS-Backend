@@ -5,9 +5,7 @@ const User = require("../models/userModel");
 ============================== */
 
 const createUser = async (userData) => {
-    const user = await User.create(userData);
-
-    return user;
+    return await User.create(userData);
 };
 
 /* ==============================
@@ -15,9 +13,9 @@ const createUser = async (userData) => {
 ============================== */
 
 const getUserById = async (userId) => {
-    const user = await User.findById(userId);
-
-    return user;
+    return await User.findById(userId).select(
+        "-password -refreshToken"
+    );
 };
 
 /* ==============================
@@ -25,9 +23,9 @@ const getUserById = async (userId) => {
 ============================== */
 
 const getUserByEmail = async (email) => {
-    const user = await User.findOne({ email });
-
-    return user;
+    return await User.findOne({ email }).select(
+        "-password -refreshToken"
+    );
 };
 
 /* ==============================
@@ -35,9 +33,9 @@ const getUserByEmail = async (email) => {
 ============================== */
 
 const getUserByUsername = async (username) => {
-    const user = await User.findOne({ username });
-
-    return user;
+    return await User.findOne({ username }).select(
+        "-password -refreshToken"
+    );
 };
 
 /* ==============================
@@ -45,9 +43,9 @@ const getUserByUsername = async (username) => {
 ============================== */
 
 const getAllUsers = async () => {
-    const users = await User.find();
-
-    return users;
+    return await User.find().select(
+        "-password -refreshToken"
+    );
 };
 
 /* ==============================
@@ -55,16 +53,14 @@ const getAllUsers = async () => {
 ============================== */
 
 const updateUser = async (userId, updateData) => {
-    const user = await User.findByIdAndUpdate(
+    return await User.findByIdAndUpdate(
         userId,
         updateData,
         {
             new: true,
             runValidators: true,
         }
-    );
-
-    return user;
+    ).select("-password -refreshToken");
 };
 
 /* ==============================
@@ -72,9 +68,32 @@ const updateUser = async (userId, updateData) => {
 ============================== */
 
 const deleteUser = async (userId) => {
-    const user = await User.findByIdAndDelete(userId);
+    return await User.findByIdAndDelete(userId);
+};
 
-    return user;
+/* ==============================
+   Get Profile
+============================== */
+
+const getProfile = async (userId) => {
+    return await User.findById(userId).select(
+        "-password -refreshToken"
+    );
+};
+
+/* ==============================
+   Update Profile
+============================== */
+
+const updateProfile = async (userId, updateData) => {
+    return await User.findByIdAndUpdate(
+        userId,
+        updateData,
+        {
+            new: true,
+            runValidators: true,
+        }
+    ).select("-password -refreshToken");
 };
 
 module.exports = {
@@ -85,4 +104,7 @@ module.exports = {
     getAllUsers,
     updateUser,
     deleteUser,
+
+    getProfile,
+    updateProfile,
 };

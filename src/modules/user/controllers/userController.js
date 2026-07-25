@@ -124,10 +124,60 @@ const deleteUser = asyncHandler(async (req, res) => {
     );
 });
 
+/* ==============================
+   Get Profile
+============================== */
+
+const getProfile = asyncHandler(async (req, res) => {
+    const user = await userService.getProfile(req.user._id);
+
+    if (!user) {
+        throw new ApiError(
+            STATUS_CODES.NOT_FOUND,
+            "User not found"
+        );
+    }
+
+    return ApiResponse(
+        res,
+        STATUS_CODES.OK,
+        "Profile fetched successfully",
+        user
+    );
+});
+
+/* ==============================
+   Update Profile
+============================== */
+
+const updateProfile = asyncHandler(async (req, res) => {
+    const user = await userService.updateProfile(
+        req.user._id,
+        req.body
+    );
+
+    if (!user) {
+        throw new ApiError(
+            STATUS_CODES.NOT_FOUND,
+            "User not found"
+        );
+    }
+
+    return ApiResponse(
+        res,
+        STATUS_CODES.OK,
+        "Profile updated successfully",
+        user
+    );
+});
+
 module.exports = {
     createUser,
     getAllUsers,
     getUserById,
     updateUser,
     deleteUser,
+
+    getProfile,
+    updateProfile,
 };
