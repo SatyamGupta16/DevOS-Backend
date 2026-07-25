@@ -147,6 +147,30 @@ const getProfile = asyncHandler(async (req, res) => {
 });
 
 /* ==============================
+   Get Public Profile
+============================== */
+
+const getPublicProfile = asyncHandler(async (req, res) => {
+    const user = await userService.getPublicProfile(
+        req.params.username
+    );
+
+    if (!user) {
+        throw new ApiError(
+            STATUS_CODES.NOT_FOUND,
+            "User not found"
+        );
+    }
+
+    return ApiResponse(
+        res,
+        STATUS_CODES.OK,
+        "Profile fetched successfully",
+        user
+    );
+});
+
+/* ==============================
    Update Profile
 ============================== */
 
@@ -171,6 +195,23 @@ const updateProfile = asyncHandler(async (req, res) => {
     );
 });
 
+/* ==============================
+   Search Users
+============================== */
+
+const searchUsers = asyncHandler(async (req, res) => {
+    const { query = "" } = req.query;
+
+    const users = await userService.searchUsers(query);
+
+    return ApiResponse(
+        res,
+        STATUS_CODES.OK,
+        "Users fetched successfully",
+        users
+    );
+});
+
 module.exports = {
     createUser,
     getAllUsers,
@@ -179,5 +220,8 @@ module.exports = {
     deleteUser,
 
     getProfile,
+    getPublicProfile,
     updateProfile,
+
+    searchUsers,
 };

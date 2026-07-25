@@ -34,6 +34,24 @@ router.put(
 );
 
 /* ==============================
+   Public Profile Route
+============================== */
+
+router.get(
+    "/profile/:username",
+    userController.getPublicProfile
+);
+
+/* ==============================
+   Search Users
+============================== */
+
+router.get(
+    "/search",
+    userController.searchUsers
+);
+
+/* ==============================
    Create User
 ============================== */
 

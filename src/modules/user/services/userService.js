@@ -49,6 +49,35 @@ const getAllUsers = async () => {
 };
 
 /* ==============================
+   Search Users              http://localhost:27017/api/v1/users/search?query=satyam
+============================== */
+
+const searchUsers = async (query) => {
+    return await User.find({
+        $or: [
+            {
+                fullName: {
+                    $regex: query,
+                    $options: "i",
+                },
+            },
+            {
+                username: {
+                    $regex: query,
+                    $options: "i",
+                },
+            },
+            {
+                email: {
+                    $regex: query,
+                    $options: "i",
+                },
+            },
+        ],
+    }).select("-password -refreshToken");
+};
+
+/* ==============================
    Update User
 ============================== */
 
@@ -82,6 +111,16 @@ const getProfile = async (userId) => {
 };
 
 /* ==============================
+   Get Public Profile
+============================== */
+
+const getPublicProfile = async (username) => {
+    return await User.findOne({ username }).select(
+        "-password -refreshToken"
+    );
+};
+
+/* ==============================
    Update Profile
 ============================== */
 
@@ -102,9 +141,10 @@ module.exports = {
     getUserByEmail,
     getUserByUsername,
     getAllUsers,
+    searchUsers,
     updateUser,
     deleteUser,
-
     getProfile,
+    getPublicProfile,
     updateProfile,
 };
