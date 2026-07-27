@@ -150,10 +150,29 @@ const getCurrentUser = asyncHandler(async (req, res) => {
     );
 });
 
+const changePassword = asyncHandler(async (req, res) => {
+
+    const { currentPassword, newPassword } = req.body;
+
+    await authService.changePassword(
+        req.user._id,
+        currentPassword,
+        newPassword
+    );
+
+    return ApiResponse(
+        res,
+        STATUS_CODES.OK,
+        "Password changed successfully"
+    );
+
+});
+
 module.exports = {
     register,
     login,
     refreshAccessToken,
     logout,
     getCurrentUser,
+    changePassword,
 };

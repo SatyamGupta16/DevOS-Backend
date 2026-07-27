@@ -135,6 +135,60 @@ const updateProfile = async (userId, updateData) => {
     ).select("-password -refreshToken");
 };
 
+/* ==============================
+   Upload Avatar
+============================== */
+
+const uploadAvatar = async (userId, avatarUrl) => {
+    return await User.findByIdAndUpdate(
+        userId,
+        {
+            avatar: avatarUrl,
+        },
+        {
+            new: true,
+            runValidators: true,
+        }
+    ).select("-password -refreshToken");
+};
+
+/* ==============================
+   Delete Avatar
+============================== */
+
+const deleteAvatar = async (userId) => {
+    return await User.findByIdAndUpdate(
+        userId,
+        {
+            avatar: "",
+        },
+        {
+            new: true,
+        }
+    ).select("-password -refreshToken");
+};
+
+/* ==============================
+   Update Social Links
+============================== */
+
+const updateSocialLinks = async (userId, socialData) => {
+    return await User.findByIdAndUpdate(
+        userId,
+        {
+            githubUsername: socialData.githubUsername,
+            leetcodeUsername: socialData.leetcodeUsername,
+            codeforcesUsername: socialData.codeforcesUsername,
+            linkedinUrl: socialData.linkedinUrl,
+            portfolioUrl: socialData.portfolioUrl,
+        },
+        {
+            new: true,
+            runValidators: true,
+        }
+    ).select("-password -refreshToken");
+};
+
 module.exports = {
     createUser,
     getUserById,
@@ -147,4 +201,7 @@ module.exports = {
     getProfile,
     getPublicProfile,
     updateProfile,
+    uploadAvatar,
+    deleteAvatar,
+    updateSocialLinks,
 };

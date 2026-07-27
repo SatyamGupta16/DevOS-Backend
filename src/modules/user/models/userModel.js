@@ -128,6 +128,29 @@ const userSchema = new mongoose.Schema(
         },
 
         /* ==============================
+           Password Reset
+        ============================== */
+
+        passwordResetToken: {
+            type: String,
+            default: "",
+        },
+
+        passwordResetExpires: {
+            type: Date,
+            default: null,
+        },
+
+        /* ==============================
+           Tokens
+        ============================== */
+
+        refreshToken: {
+            type: String,
+            default: "",
+        },
+
+        /* ==============================
            Tokens
         ============================== */
 

@@ -10,21 +10,19 @@ const {
 } = require("../validators/userValidator");
 
 const validateRequest = require("../../../middleware/validateRequest");
-
 const protect = require("../../../middleware/authMiddleware");
+const upload = require("../../../middleware/uploadMiddleware");
 
-/* ==============================
-   Profile Routes (Protected)
-============================== */
+/* =====================================
+   Protected Profile Routes
+===================================== */
 
-// Get Current User Profile
 router.get(
     "/profile",
     protect,
     userController.getProfile
 );
 
-// Update Current User Profile
 router.put(
     "/profile",
     protect,
@@ -33,27 +31,54 @@ router.put(
     userController.updateProfile
 );
 
-/* ==============================
-   Public Profile Route
-============================== */
+/* =====================================
+   Avatar Routes (Must be before /:id)
+===================================== */
+
+router.post(
+    "/avatar",
+    protect,
+    upload.single("avatar"),
+    userController.uploadAvatar
+);
+
+router.delete(
+    "/avatar",
+    protect,
+    userController.deleteAvatar
+);
+
+/* =====================================
+   Public Profile
+===================================== */
 
 router.get(
     "/profile/:username",
     userController.getPublicProfile
 );
 
-/* ==============================
+/* =====================================
+   Social Links (Protected)
+===================================== */
+
+router.put(
+    "/socials",
+    protect,
+    userController.updateSocialLinks
+);
+
+/* =====================================
    Search Users
-============================== */
+===================================== */
 
 router.get(
     "/search",
     userController.searchUsers
 );
 
-/* ==============================
+/* =====================================
    Create User
-============================== */
+===================================== */
 
 router.post(
     "/",
@@ -62,27 +87,23 @@ router.post(
     userController.createUser
 );
 
-/* ==============================
+/* =====================================
    Get All Users
-============================== */
+===================================== */
 
 router.get(
     "/",
     userController.getAllUsers
 );
 
-/* ==============================
-   Get User By ID
-============================== */
+/* =====================================
+   User By ID (Keep LAST)
+===================================== */
 
 router.get(
     "/:id",
     userController.getUserById
 );
-
-/* ==============================
-   Update User
-============================== */
 
 router.put(
     "/:id",
@@ -90,10 +111,6 @@ router.put(
     validateRequest,
     userController.updateUser
 );
-
-/* ==============================
-   Delete User
-============================== */
 
 router.delete(
     "/:id",

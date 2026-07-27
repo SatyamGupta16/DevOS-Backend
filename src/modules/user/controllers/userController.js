@@ -108,7 +108,9 @@ const updateUser = asyncHandler(async (req, res) => {
 ============================== */
 
 const deleteUser = asyncHandler(async (req, res) => {
-    const user = await userService.deleteUser(req.params.id);
+    const user = await userService.deleteUser(
+        req.params.id
+    );
 
     if (!user) {
         throw new ApiError(
@@ -129,7 +131,9 @@ const deleteUser = asyncHandler(async (req, res) => {
 ============================== */
 
 const getProfile = asyncHandler(async (req, res) => {
-    const user = await userService.getProfile(req.user._id);
+    const user = await userService.getProfile(
+        req.user._id
+    );
 
     if (!user) {
         throw new ApiError(
@@ -212,6 +216,62 @@ const searchUsers = asyncHandler(async (req, res) => {
     );
 });
 
+/* ==============================
+   Upload Avatar
+============================== */
+
+const uploadAvatar = asyncHandler(async (req, res) => {
+    if (!req.file) {
+        throw new ApiError(
+            STATUS_CODES.BAD_REQUEST,
+            "Please upload an image"
+        );
+    }
+
+    const user = await userService.uploadAvatar(
+        req.user._id,
+        req.file.path
+    );
+
+    return ApiResponse(
+        res,
+        STATUS_CODES.OK,
+        "Avatar uploaded successfully",
+        user
+    );
+});
+
+/* ==============================
+   Delete Avatar
+============================== */
+
+const deleteAvatar = asyncHandler(async (req, res) => {
+    const user = await userService.deleteAvatar(
+        req.user._id
+    );
+
+    return ApiResponse(
+        res,
+        STATUS_CODES.OK,
+        "Avatar deleted successfully",
+        user
+    );
+});
+
+const updateSocialLinks = asyncHandler(async (req, res) => {
+    const user = await userService.updateSocialLinks(
+        req.user._id,
+        req.body
+    );
+
+    return ApiResponse(
+        res,
+        STATUS_CODES.OK,
+        "Social links updated successfully",
+        user
+    );
+});
+
 module.exports = {
     createUser,
     getAllUsers,
@@ -224,4 +284,9 @@ module.exports = {
     updateProfile,
 
     searchUsers,
+
+    uploadAvatar,
+    deleteAvatar,
+
+    updateSocialLinks,
 };

@@ -4,15 +4,15 @@ const router = express.Router();
 
 const authController = require("../controllers/authController");
 
-const {
-    registerValidation,
-    loginValidation,
-} = require("../validators/authValidator");
-
 const validateRequest = require("../../../middleware/validateRequest");
 
 const protect = require("../../../middleware/authMiddleware");
 
+const {
+    registerValidation,
+    loginValidation,
+    changePasswordValidation,
+} = require("../validators/authValidator");
 
 /* ==============================
    Authentication Routes
@@ -43,6 +43,13 @@ router.post(
     authController.refreshAccessToken
 );
 
+router.put(
+    "/change-password",
+    protect,
+    changePasswordValidation,
+    validateRequest,
+    authController.changePassword
+);
 
 // Logout (Protected)
 router.post(

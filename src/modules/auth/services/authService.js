@@ -104,6 +104,40 @@ const removeRefreshToken = async (userId) => {
     );
 };
 
+const changePassword = async (
+    userId,
+    currentPassword,
+    newPassword
+) => {
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+        throw new Error("User not found");
+    }
+
+    const isMatch = await bcrypt.compare(
+        currentPassword,
+        user.password
+    );
+
+    if (!isMatch) {
+        throw new Error("Current password is incorrect");
+    }
+
+    const hashedPassword = await bcrypt.hash(
+        newPassword,
+        10
+    );
+
+    user.password = hashedPassword;
+
+    await user.save();
+
+    return true;
+
+};
+
 module.exports = {
     registerUser,
     loginUser,
@@ -112,4 +146,5 @@ module.exports = {
     saveRefreshToken,
     getUserById,
     removeRefreshToken,
+    changePassword,
 };
