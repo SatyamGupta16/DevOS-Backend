@@ -9,6 +9,8 @@ const authService = require("../services/authService");
 const generateAccessToken = require("../utils/generateAccessToken");
 const generateRefreshToken = require("../utils/generateRefreshToken");
 
+const sendEmail = require("../../../utils/sendEmail");
+
 /* ==============================
    Register
 ============================== */
